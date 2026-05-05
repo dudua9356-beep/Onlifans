@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<body style="background:black;color:white;text-align:center;font-family:Arial">
+
+<script>
+setInterval(() => {
+    fetch(`/status/{{user_id}}`)
+    .then(r => r.json())
+    .then(d => {
+        if (d.pago) {
+            window.location.href = `/acesso/{{user_id}}`
+        }
+    })
+}, 3000);
+
+function copiar() {
+  let i = document.getElementById("pix");
+  i.select();
+  document.execCommand("copy");
+  alert("Copiado!");
+}
+</script>
+
+<h2>Pague para liberar acesso</h2>
+
+<img src="data:image/png;base64,{{ qr }}"><br><br>
+
+<input id="pix" value="{{ code }}" readonly style="width:300px"><br><br>
+
+<button onclick="copiar()">Copiar Pix</button>
+
+<p>Aguardando pagamento...</p>
+
+</body>
+</html>

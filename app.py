@@ -28,7 +28,7 @@ def checkout():
 
         user_id = str(uuid.uuid4())
 
-        valor = 45  # valor fixo
+        valor = 29,99  # valor fixo
 
         payment_data = {
             "transaction_amount": float(valor),

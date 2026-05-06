@@ -1,10 +1,12 @@
-from flask import Flask, render_template, request, jsonify, redirect
+from flask import Flask, render_template, request, jsonify
 import mercadopago
 import uuid
+import os
 
 app = Flask(__name__)
 
-ACCESS_TOKEN = "SEU_TOKEN_AQUI"
+# ---------------- CONFIG MERCADO PAGO ----------------
+ACCESS_TOKEN = os.getenv("MERCADO_PAGO_TOKEN")
 sdk = mercadopago.SDK(ACCESS_TOKEN)
 
 pagamentos = {}
@@ -26,29 +28,32 @@ def checkout():
 
         user_id = str(uuid.uuid4())
 
-        valor = 45  # 🔥 VALOR FIXO
+        valor = 45  # valor fixo
 
         payment_data = {
-            "transaction_amount": valor,
+            "transaction_amount": float(valor),
             "payment_method_id": "pix",
             "external_reference": user_id,
             "notification_url": "https://SEU-SITE.onrender.com/webhook",
-            "payer": {"email": email}
+            "payer": {
+                "email": email
+            },
+            "description": f"Compra do produto {produto}"
         }
 
         payment = sdk.payment().create(payment_data)
-
         response = payment.get("response", {})
 
         qr = response.get("point_of_interaction", {}).get("transaction_data", {}).get("qr_code_base64")
         code = response.get("point_of_interaction", {}).get("transaction_data", {}).get("qr_code")
 
-        if not qr:
+        if not qr or not code:
             return "Erro ao gerar pagamento. Verifique o token do Mercado Pago."
 
         pagamentos[user_id] = {
             "produto": produto,
-            "pago": False
+            "pago": False,
+            "payment_id": response.get("id")
         }
 
         return render_template("pagar.html", qr=qr, code=code, user_id=user_id)
@@ -82,15 +87,20 @@ def acesso(user_id):
 def webhook():
     data = request.json
 
-    if data and data.get("type") == "payment":
-        payment_id = data["data"]["id"]
+    try:
+        if data and data.get("type") == "payment":
+            payment_id = data["data"]["id"]
 
-        payment = sdk.payment().get(payment_id)
+            payment = sdk.payment().get(payment_id)
+            payment_info = payment.get("response", {})
 
-        if payment["response"]["status"] == "approved":
-            user_id = payment["response"]["external_reference"]
+            if payment_info.get("status") == "approved":
+                user_id = payment_info.get("external_reference")
 
-            if user_id in pagamentos:
-                pagamentos[user_id]["pago"] = True
+                if user_id in pagamentos:
+                    pagamentos[user_id]["pago"] = True
+
+    except Exception as e:
+        print("Erro webhook:", e)
 
     return "ok"

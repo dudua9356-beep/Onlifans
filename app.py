@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, redirect, url_for
+from flask import Flask, render_template, request, jsonify, redirect
 import mercadopago
 import uuid
 
@@ -21,14 +21,12 @@ def checkout():
         produto = request.form.get("produto")
         email = request.form.get("email")
 
+        if not email:
+            return "Digite um email válido"
+
         user_id = str(uuid.uuid4())
 
-        if produto == "vip":
-            valor = 20
-        elif produto == "live":
-            valor = 30
-        else:
-            valor = 50
+        valor = 45  # 🔥 VALOR FIXO
 
         payment_data = {
             "transaction_amount": valor,
@@ -40,8 +38,13 @@ def checkout():
 
         payment = sdk.payment().create(payment_data)
 
-        qr = payment["response"]["point_of_interaction"]["transaction_data"]["qr_code_base64"]
-        code = payment["response"]["point_of_interaction"]["transaction_data"]["qr_code"]
+        response = payment.get("response", {})
+
+        qr = response.get("point_of_interaction", {}).get("transaction_data", {}).get("qr_code_base64")
+        code = response.get("point_of_interaction", {}).get("transaction_data", {}).get("qr_code")
+
+        if not qr:
+            return "Erro ao gerar pagamento. Verifique o token do Mercado Pago."
 
         pagamentos[user_id] = {
             "produto": produto,
@@ -59,7 +62,7 @@ def status(user_id):
     pago = pagamentos.get(user_id, {}).get("pago", False)
     return jsonify({"pago": pago})
 
-# ---------------- ACESSO BLOQUEADO ----------------
+# ---------------- ACESSO ----------------
 @app.route("/acesso/<user_id>")
 def acesso(user_id):
     user = pagamentos.get(user_id)

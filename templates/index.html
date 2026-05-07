@@ -1,12 +1,121 @@
 <!DOCTYPE html>
-<html>
-<body style="background:black;color:white;text-align:center;font-family:Arial">
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<h1>🔥 Acesso Exclusivo</h1>
+<title>Acesso VIP</title>
 
-<a href="/checkout?produto=vip">Grupo VIP</a><br><br>
-<a href="/checkout?produto=live">Live</a><br><br>
-<a href="/checkout?produto=only">OnlyFans</a>
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:Arial, sans-serif;
+    background:#000;
+    color:white;
+    text-align:center;
+}
+
+.container{
+    padding:20px;
+}
+
+h1{
+    font-size:36px;
+    margin-top:15px;
+}
+
+.subtitulo{
+    color:#ccc;
+    font-size:18px;
+    line-height:30px;
+    margin:20px 10px;
+}
+
+.banner{
+    width:95%;
+    max-width:430px;
+    border-radius:25px;
+    margin-top:20px;
+    box-shadow:0 0 30px rgba(255,0,120,.5);
+}
+
+.botao{
+    display:block;
+    width:90%;
+    max-width:350px;
+    margin:18px auto;
+    padding:18px;
+    border-radius:18px;
+    text-decoration:none;
+    color:white;
+    font-size:22px;
+    font-weight:bold;
+    transition:0.3s;
+}
+
+.botao:hover{
+    transform:scale(1.03);
+}
+
+.vip{
+    background:#ff0080;
+}
+
+.live{
+    background:#7b2cff;
+}
+
+.only{
+    background:#111;
+    border:2px solid white;
+}
+
+.info{
+    margin-top:20px;
+    color:#999;
+    font-size:15px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🔥 Conteúdo Exclusivo 🔥</h1>
+
+<div class="subtitulo">
+🔞 Conteúdo liberado imediatamente após o pagamento<br>
+💋 Grupo VIP atualizado diariamente<br>
+🎥 Lives privadas e conteúdo premium
+</div>
+
+<img src="/static/foto1.jpg" class="banner">
+
+<a class="botao vip" href="/checkout?produto=vip">
+🔥 ENTRAR NO VIP
+</a>
+
+<a class="botao live" href="/checkout?produto=live">
+🎥 ACESSAR LIVE
+</a>
+
+<a class="botao only" href="/checkout?produto=onlyfans">
+💎 ONLYFANS PREMIUM
+</a>
+
+<div class="info">
+Pagamento seguro via Pix
+</div>
+
+</div>
 
 </body>
 </html>

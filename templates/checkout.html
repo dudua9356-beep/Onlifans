@@ -1,105 +1,51 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+@app.route("/checkout")
+def checkout():
 
-<title>Pagamento VIP</title>
+    produto = request.args.get("produto")
+    email = request.args.get("email")
 
-<style>
+    if not produto or not email:
+        return redirect("/")
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
+    user_id = str(uuid.uuid4())
 
-body{
-    background:#000;
-    font-family:Arial, sans-serif;
-    color:white;
-    text-align:center;
-}
+    valor = 45
 
-.container{
-    padding:25px;
-    max-width:450px;
-    margin:auto;
-}
+    preference_data = {
 
-.banner{
-    width:100%;
-    border-radius:20px;
-    margin-top:20px;
-    box-shadow:0 0 25px rgba(255,0,120,.5);
-}
+        "items": [
+            {
+                "title": f"Acesso {produto}",
+                "quantity": 1,
+                "currency_id": "BRL",
+                "unit_price": float(valor)
+            }
+        ],
 
-h1{
-    font-size:34px;
-    margin-top:20px;
-}
+        "payer": {
+            "email": email
+        },
 
-.texto{
-    color:#ccc;
-    margin-top:15px;
-    line-height:28px;
-    font-size:18px;
-}
+        "payment_methods": {
+            "excluded_payment_types": []
+        },
 
-.pagamentos{
-    margin-top:20px;
-    font-size:18px;
-    color:#fff;
-}
+        "external_reference": user_id,
 
-.botao{
-    width:100%;
-    padding:18px;
-    margin-top:20px;
-    border:none;
-    border-radius:15px;
-    background:#ff0080;
-    color:white;
-    font-size:22px;
-    font-weight:bold;
-    text-decoration:none;
-    display:block;
-}
+        "notification_url": "https://onlifans.onrender.com/webhook",
 
-.seguro{
-    margin-top:18px;
-    color:#888;
-    font-size:14px;
-}
+        "back_urls": {
+            "success": f"https://onlifans.onrender.com/acesso/{user_id}"
+        }
+    }
 
-</style>
-</head>
+    preference = sdk.preference().create(preference_data)
 
-<body>
+    link_pagamento = preference["response"]["init_point"]
 
-<div class="container">
+    pagamentos[user_id] = {
+        "produto": produto,
+        "pago": False
+    }
 
-<img src="/static/foto1.jpg" class="banner">
-
-<h1>🔥 Finalizar Pagamento 🔥</h1>
-
-<div class="texto">
-🔞 Seu acesso será liberado automaticamente após o pagamento.
-</div>
-
-<div class="pagamentos">
-💳 Aceitamos Pix, Crédito e Débito
-</div>
-
-<a href="/pagamento" class="botao">
-🔥 IR PARA PAGAMENTO
-</a>
-
-<div class="seguro">
-Pagamento seguro processado automaticamente.
-</div>
-
-</div>
-
-</body>
-</html>
+    return redirect(link_pagamento)

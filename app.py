@@ -43,7 +43,7 @@ def checkout():
 
     user_id = str(uuid.uuid4())
 
-    valor = 45
+    valor = 29
 
     preference_data = {
 
@@ -100,7 +100,7 @@ def process_payment():
         payment_data = {
 
             "transaction_amount": float(
-                data.get("transaction_amount", 45)
+                data.get("transaction_amount", 29)
             ),
 
             "token": data.get("token"),

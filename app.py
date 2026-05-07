@@ -72,19 +72,25 @@ def checkout():
             "success": f"https://onlifans.onrender.com/acesso/{user_id}",
             "failure": "https://onlifans.onrender.com",
             "pending": "https://onlifans.onrender.com"
-        }
+        },
+
+        "auto_return": "approved"
     }
 
     preference = sdk.preference().create(preference_data)
 
-    link_pagamento = preference["response"]["init_point"]
+    preference_id = preference["response"]["id"]
 
     pagamentos[user_id] = {
         "produto": produto,
         "pago": False
     }
 
-    return redirect(link_pagamento)
+    return render_template(
+        "checkout.html",
+        preference_id=preference_id,
+        produto=produto
+    )
 
 # ---------------- STATUS ----------------
 
@@ -106,6 +112,9 @@ def acesso(user_id):
 
     if not user:
         return "Acesso inválido"
+
+    if not user["pago"]:
+        return "Pagamento ainda não aprovado"
 
     if user["produto"] == "vip":
         return "<h1>🔓 Grupo VIP liberado</h1>"

@@ -69,25 +69,22 @@ def checkout():
         "notification_url": "https://onlifans.onrender.com/webhook",
 
         "back_urls": {
-            "success": f"https://onlifans.onrender.com/acesso/{user_id}"
+            "success": f"https://onlifans.onrender.com/acesso/{user_id}",
+            "failure": "https://onlifans.onrender.com",
+            "pending": "https://onlifans.onrender.com"
         }
     }
 
     preference = sdk.preference().create(preference_data)
 
-    preference_id = preference["response"]["id"]
+    link_pagamento = preference["response"]["init_point"]
 
     pagamentos[user_id] = {
         "produto": produto,
         "pago": False
     }
 
-    return render_template(
-        "checkout.html",
-        preference_id=preference_id,
-        email=email,
-        produto=produto
-    )
+    return redirect(link_pagamento)
 
 # ---------------- STATUS ----------------
 

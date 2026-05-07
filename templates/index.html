@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Acesso VIP</title>
+<title>Pagamento VIP</title>
 
 <style>
 
@@ -15,71 +15,74 @@
 }
 
 body{
-    font-family:Arial, sans-serif;
     background:#000;
+    font-family:Arial, sans-serif;
     color:white;
     text-align:center;
 }
 
 .container{
-    padding:20px;
-}
-
-h1{
-    font-size:36px;
-    margin-top:15px;
-}
-
-.subtitulo{
-    color:#ccc;
-    font-size:18px;
-    line-height:30px;
-    margin:20px 10px;
+    padding:25px;
+    max-width:450px;
+    margin:auto;
 }
 
 .banner{
-    width:95%;
-    max-width:430px;
-    border-radius:25px;
+    width:100%;
+    border-radius:20px;
     margin-top:20px;
-    box-shadow:0 0 30px rgba(255,0,120,.5);
+    box-shadow:0 0 25px rgba(255,0,120,.5);
 }
 
-.botao{
-    display:block;
-    width:90%;
-    max-width:350px;
-    margin:18px auto;
+h1{
+    font-size:34px;
+    margin-top:20px;
+}
+
+.texto{
+    color:#ccc;
+    margin-top:15px;
+    line-height:28px;
+    font-size:18px;
+}
+
+.pagamentos{
+    margin-top:20px;
+    font-size:18px;
+    color:#fff;
+}
+
+input{
+    width:100%;
     padding:18px;
-    border-radius:18px;
-    text-decoration:none;
+    margin-top:25px;
+    border:none;
+    border-radius:15px;
+    font-size:18px;
+    background:#111;
+    color:white;
+}
+
+button{
+    width:100%;
+    padding:18px;
+    margin-top:20px;
+    border:none;
+    border-radius:15px;
+    background:#ff0080;
     color:white;
     font-size:22px;
     font-weight:bold;
-    transition:0.3s;
 }
 
-.botao:hover{
-    transform:scale(1.03);
+button:hover{
+    opacity:0.9;
 }
 
-.vip{
-    background:#ff0080;
-}
-
-.live{
-    background:#7b2cff;
-}
-
-.only{
-    background:#111;
-    border:2px solid white;
-}
-
-.info{
-    margin-top:20px;
-    color:#999;
-    font-size:15px;
+.seguro{
+    margin-top:18px;
+    color:#888;
+    font-size:14px;
 }
 
 </style>
@@ -89,30 +92,37 @@ h1{
 
 <div class="container">
 
-<h1>🔥 Conteúdo Exclusivo 🔥</h1>
-
-<div class="subtitulo">
-🔞 Conteúdo liberado imediatamente após o pagamento<br>
-💋 Grupo VIP atualizado diariamente<br>
-🎥 Lives privadas e conteúdo premium
-</div>
-
 <img src="/static/foto1.jpg" class="banner">
 
-<a class="botao vip" href="/checkout?produto=vip">
-🔥 ENTRAR NO VIP
-</a>
+<h1>🔥 Acesso VIP 🔥</h1>
 
-<a class="botao live" href="/checkout?produto=live">
-🎥 ACESSAR LIVE
-</a>
+<div class="texto">
+🔞 Conteúdo exclusivo liberado imediatamente após o pagamento.<br>
+💋 Grupo VIP atualizado diariamente.<br>
+🎥 Lives privadas e conteúdos premium.
+</div>
 
-<a class="botao only" href="/checkout?produto=onlyfans">
-💎 ONLYFANS PREMIUM
-</a>
+<div class="pagamentos">
+💳 Aceitamos Pix, Crédito e Débito
+</div>
 
-<div class="info">
-Pagamento seguro via Pix
+<form method="POST">
+
+<input 
+type="email" 
+name="email" 
+placeholder="Digite seu melhor e-mail"
+required
+>
+
+<button type="submit">
+🔥 CONTINUAR PAGAMENTO
+</button>
+
+</form>
+
+<div class="seguro">
+Pagamento 100% seguro e processado automaticamente.
 </div>
 
 </div>

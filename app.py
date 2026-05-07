@@ -11,7 +11,6 @@ ACCESS_TOKEN = os.getenv("MERCADO_PAGO_TOKEN")
 
 sdk = mercadopago.SDK(ACCESS_TOKEN)
 
-# banco simples em memória (pode trocar depois por banco real)
 pagamentos = {}
 
 # ---------------- HOME ----------------
@@ -44,6 +43,40 @@ def checkout():
 
     user_id = str(uuid.uuid4())
 
+    valor = 45
+
+    preference_data = {
+
+        "items": [
+            {
+                "title": f"Acesso {produto}",
+                "quantity": 1,
+                "currency_id": "BRL",
+                "unit_price": float(valor)
+            }
+        ],
+
+        "payer": {
+            "email": email
+        },
+
+        "external_reference": user_id,
+
+        "notification_url": "https://onlifans.onrender.com/webhook",
+
+        "back_urls": {
+            "success": f"https://onlifans.onrender.com/acesso/{user_id}",
+            "failure": "https://onlifans.onrender.com",
+            "pending": "https://onlifans.onrender.com"
+        },
+
+        "auto_return": "approved"
+    }
+
+    preference = sdk.preference().create(preference_data)
+
+    preference_id = preference["response"]["id"]
+
     pagamentos[user_id] = {
         "produto": produto,
         "pago": False
@@ -51,12 +84,11 @@ def checkout():
 
     return render_template(
         "checkout.html",
-        produto=produto,
-        email=email,
-        user_id=user_id
+        preference_id=preference_id,
+        produto=produto
     )
 
-# ---------------- PIX PAYMENT ----------------
+# ---------------- PROCESSAR PAGAMENTO ----------------
 
 @app.route("/process_payment", methods=["POST"])
 def process_payment():
@@ -66,30 +98,36 @@ def process_payment():
     try:
 
         payment_data = {
-            "transaction_amount": float(data.get("transaction_amount", 45)),
+
+            "transaction_amount": float(
+                data.get("transaction_amount", 45)
+            ),
+
+            "token": data.get("token"),
+
             "description": "Acesso VIP",
-            "payment_method_id": "pix",
+
+            "installments": int(
+                data.get("installments", 1)
+            ),
+
+            "payment_method_id": data.get("payment_method_id"),
+
             "payer": {
                 "email": data["payer"]["email"]
             }
         }
 
         payment = sdk.payment().create(payment_data)
-        response = payment["response"]
 
-        pix = response.get("point_of_interaction", {}).get("transaction_data", {})
-
-        return jsonify({
-            "payment_id": response.get("id"),
-            "status": response.get("status"),
-            "qr_code": pix.get("qr_code"),
-            "qr_base64": pix.get("qr_code_base64"),
-            "ticket_url": pix.get("ticket_url")
-        })
+        return jsonify(payment["response"])
 
     except Exception as e:
-        print("Erro PIX:", e)
-        return jsonify({"error": str(e)}), 500
+        print("Erro pagamento:", e)
+
+        return jsonify({
+            "error": str(e)
+        }), 500
 
 # ---------------- STATUS ----------------
 
@@ -122,9 +160,9 @@ def acesso(user_id):
         return "<h1>🔓 Live liberada</h1>"
 
     else:
-        return "<h1>🔓 Acesso liberado</h1>"
+        return "<h1>🔓 OnlyFans Premium liberado</h1>"
 
-# ---------------- WEBHOOK (CONFIRMAÇÃO PIX) ----------------
+# ---------------- WEBHOOK ----------------
 
 @app.route("/webhook", methods=["POST"])
 def webhook():
@@ -138,6 +176,7 @@ def webhook():
             payment_id = data["data"]["id"]
 
             payment = sdk.payment().get(payment_id)
+
             payment_info = payment.get("response", {})
 
             if payment_info.get("status") == "approved":

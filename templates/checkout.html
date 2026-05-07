@@ -1,51 +1,74 @@
-@app.route("/checkout")
-def checkout():
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    produto = request.args.get("produto")
-    email = request.args.get("email")
+<title>Pagamento VIP</title>
 
-    if not produto or not email:
-        return redirect("/")
+<script src="https://sdk.mercadopago.com/js/v2"></script>
 
-    user_id = str(uuid.uuid4())
+<style>
 
-    valor = 45
+body{
+    background:#000;
+    color:white;
+    font-family:Arial;
+    text-align:center;
+    padding:20px;
+}
 
-    preference_data = {
+.banner{
+    width:95%;
+    max-width:420px;
+    border-radius:20px;
+    margin-top:20px;
+}
 
-        "items": [
-            {
-                "title": f"Acesso {produto}",
-                "quantity": 1,
-                "currency_id": "BRL",
-                "unit_price": float(valor)
-            }
-        ],
+h1{
+    font-size:34px;
+    margin-top:20px;
+}
 
-        "payer": {
-            "email": email
-        },
+.texto{
+    color:#ccc;
+    margin-top:15px;
+    line-height:28px;
+}
 
-        "payment_methods": {
-            "excluded_payment_types": []
-        },
+#wallet_container{
+    margin-top:30px;
+}
 
-        "external_reference": user_id,
+</style>
+</head>
 
-        "notification_url": "https://onlifans.onrender.com/webhook",
+<body>
 
-        "back_urls": {
-            "success": f"https://onlifans.onrender.com/acesso/{user_id}"
-        }
+<img src="/static/foto1.jpg" class="banner">
+
+<h1>🔥 Finalizar Pagamento 🔥</h1>
+
+<div class="texto">
+💳 Pix, crédito e débito disponíveis.<br>
+🔓 Acesso liberado automaticamente após pagamento.
+</div>
+
+<div id="wallet_container"></div>
+
+<script>
+
+const mp = new MercadoPago("APP_USR-8b7b990d-87cf-4825-8235-a82877896e28", {
+    locale: "pt-BR"
+});
+
+mp.bricks().create("wallet", "wallet_container", {
+    initialization: {
+        preferenceId: "{{ preference_id }}"
     }
+});
 
-    preference = sdk.preference().create(preference_data)
+</script>
 
-    link_pagamento = preference["response"]["init_point"]
-
-    pagamentos[user_id] = {
-        "produto": produto,
-        "pago": False
-    }
-
-    return redirect(link_pagamento)
+</body>
+</html>

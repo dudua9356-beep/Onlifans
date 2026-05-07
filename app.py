@@ -60,10 +60,6 @@ def checkout():
             "email": email
         },
 
-        "payment_methods": {
-            "excluded_payment_types": []
-        },
-
         "external_reference": user_id,
 
         "notification_url": "https://onlifans.onrender.com/webhook",
@@ -91,6 +87,47 @@ def checkout():
         preference_id=preference_id,
         produto=produto
     )
+
+# ---------------- PROCESSAR PAGAMENTO ----------------
+
+@app.route("/process_payment", methods=["POST"])
+def process_payment():
+
+    data = request.json
+
+    try:
+
+        payment_data = {
+
+            "transaction_amount": float(
+                data.get("transaction_amount", 45)
+            ),
+
+            "token": data.get("token"),
+
+            "description": "Acesso VIP",
+
+            "installments": int(
+                data.get("installments", 1)
+            ),
+
+            "payment_method_id": data.get("payment_method_id"),
+
+            "payer": {
+                "email": data["payer"]["email"]
+            }
+        }
+
+        payment = sdk.payment().create(payment_data)
+
+        return jsonify(payment["response"])
+
+    except Exception as e:
+        print("Erro pagamento:", e)
+
+        return jsonify({
+            "error": str(e)
+        }), 500
 
 # ---------------- STATUS ----------------
 

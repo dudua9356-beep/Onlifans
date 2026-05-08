@@ -188,13 +188,102 @@ def acesso(user_id):
         return "Pagamento ainda não aprovado"
 
     if user["produto"] == "vip":
-        return "<h1>🔓 Grupo VIP liberado</h1>"
+
+        return """
+
+        <html>
+
+        <head>
+
+        <title>Acesso liberado</title>
+
+        <style>
+
+        body{
+            background:#000;
+            color:white;
+            font-family:Arial;
+            text-align:center;
+            padding-top:100px;
+        }
+
+        a{
+            display:inline-block;
+            margin-top:30px;
+            padding:20px 35px;
+            background:#ff0080;
+            color:white;
+            text-decoration:none;
+            border-radius:15px;
+            font-size:22px;
+            font-weight:bold;
+        }
+
+        </style>
+
+        </head>
+
+        <body>
+
+        <h1>🔓 Acesso liberado com sucesso!</h1>
+
+        <p>
+        Clique abaixo para entrar no grupo VIP.
+        </p>
+
+        <a href="https://t.me/+OTojI9QFc-s1ODEx" target="_blank">
+        ENTRAR NO GRUPO VIP
+        </a>
+
+        </body>
+
+        </html>
+
+        """
 
     elif user["produto"] == "live":
-        return "<h1>🔓 Live liberada</h1>"
+
+        return """
+
+        <html>
+
+        <body style="
+        background:black;
+        color:white;
+        text-align:center;
+        padding-top:100px;
+        font-family:Arial;
+        ">
+
+        <h1>🔓 Live liberada</h1>
+
+        </body>
+
+        </html>
+
+        """
 
     else:
-        return "<h1>🔓 OnlyFans Premium liberado</h1>"
+
+        return """
+
+        <html>
+
+        <body style="
+        background:black;
+        color:white;
+        text-align:center;
+        padding-top:100px;
+        font-family:Arial;
+        ">
+
+        <h1>🔓 OnlyFans Premium liberado</h1>
+
+        </body>
+
+        </html>
+
+        """
 
 # ---------------- WEBHOOK ----------------
 

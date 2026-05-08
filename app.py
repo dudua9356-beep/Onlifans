@@ -97,31 +97,63 @@ def process_payment():
 
     try:
 
+        # ---------------- PIX ----------------
+
+        if data.get("payment_method_id") == "pix":
+
+            payment_data = {
+
+                "transaction_amount": 25,
+
+                "description": "Acesso VIP",
+
+                "payment_method_id": "pix",
+
+                "payer": {
+                    "email": data["payer"]["email"]
+                }
+            }
+
+            payment = sdk.payment().create(payment_data)
+
+            response = payment["response"]
+
+            qr_code = response["point_of_interaction"]["transaction_data"]["qr_code"]
+
+            qr_base64 = response["point_of_interaction"]["transaction_data"]["qr_code_base64"]
+
+            return jsonify({
+                "qr_code": qr_code,
+                "qr_base64": qr_base64
+            })
+
+        # ---------------- CARTÃO / BOLETO ----------------
+
         payment_data = {
 
             "transaction_amount": 25,
 
+            "token": data.get("token"),
+
             "description": "Acesso VIP",
 
-            "payment_method_id": "pix",
+            "installments": int(
+                data.get("installments", 1)
+            ),
+
+            "payment_method_id": data.get("payment_method_id"),
+
+            "issuer_id": data.get("issuer_id"),
 
             "payer": {
-                "email": data["payer"]["email"]
+                "email": data["payer"]["email"],
+                "identification": data["payer"].get("identification")
             }
         }
 
         payment = sdk.payment().create(payment_data)
 
-        response = payment["response"]
-
-        qr_code = response["point_of_interaction"]["transaction_data"]["qr_code"]
-
-        qr_base64 = response["point_of_interaction"]["transaction_data"]["qr_code_base64"]
-
-        return jsonify({
-            "qr_code": qr_code,
-            "qr_base64": qr_base64
-        })
+        return jsonify(payment["response"])
 
     except Exception as e:
 

@@ -81,7 +81,7 @@ button:hover{
 #paymentBrick_container{
     margin-top:40px;
     background:white;
-    padding:15px;
+    padding:20px;
     border-radius:20px;
 }
 
@@ -195,17 +195,11 @@ const mp = new MercadoPago(
 const bricksBuilder = mp.bricks();
 
 bricksBuilder.create(
-"payment",
+"wallet",
 "paymentBrick_container",
 {
     initialization: {
-        amount: 25
-    },
-
-    customization: {
-        paymentMethods: {
-            maxInstallments: 12
-        }
+        preferenceId: "{{ preference_id }}"
     }
 }
 );

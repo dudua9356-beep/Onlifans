@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -73,6 +74,7 @@ button{
     color:white;
     font-size:22px;
     font-weight:bold;
+    cursor:pointer;
 }
 
 button:hover{
@@ -97,8 +99,10 @@ button:hover{
 <h1>🔥 Acesso VIP 🔥</h1>
 
 <div class="texto">
-🔞 Conteúdo exclusivo liberado imediatamente após o pagamento.<br>
+🔞 Conteúdo exclusivo liberado imediatamente após o pagamento.<br><br>
+
 💋 Grupo VIP atualizado diariamente.<br>
+
 🎥 Lives privadas e conteúdos premium.
 </div>
 
@@ -108,11 +112,17 @@ button:hover{
 
 <form method="POST">
 
-<input 
-type="email" 
-name="email" 
+<input
+type="email"
+name="email"
 placeholder="Digite seu melhor e-mail"
 required
+>
+
+<input
+type="hidden"
+name="produto"
+value="vip"
 >
 
 <button type="submit">

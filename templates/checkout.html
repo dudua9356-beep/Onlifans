@@ -114,9 +114,11 @@ button:hover{
 
 <h2>⚡ Pagar com Pix</h2>
 
-<div id="pixArea">
-Carregando Pix...
-</div>
+<button onclick="gerarPix()">
+GERAR PIX
+</button>
+
+<div id="pixArea"></div>
 
 </div>
 
@@ -129,6 +131,9 @@ Carregando Pix...
 <script>
 
 async function gerarPix(){
+
+    document.getElementById("pixArea").innerHTML =
+    "Gerando Pix...";
 
     const response = await fetch("/process_payment", {
 
@@ -155,7 +160,7 @@ async function gerarPix(){
         width="250"
         style="
         border-radius:20px;
-        margin-top:15px;
+        margin-top:20px;
         "
         >
 
@@ -179,8 +184,6 @@ function copiarPix(){
 
     alert("Pix copiado!");
 }
-
-gerarPix();
 
 const mp = new MercadoPago(
 "APP_USR-8b7b990d-87cf-4825-8235-a82877896e28",
@@ -210,4 +213,4 @@ bricksBuilder.create(
 </script>
 
 </body>
-    </html>
+</html>

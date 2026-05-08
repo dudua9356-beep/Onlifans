@@ -11,6 +11,12 @@
 
 <style>
 
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
 body{
     background:#000;
     color:white;
@@ -19,15 +25,32 @@ body{
     padding:20px;
 }
 
-.banner{
-    width:100%;
-    max-width:420px;
-    border-radius:20px;
+.container{
+    max-width:450px;
+    margin:auto;
 }
 
-#paymentBrick_container{
-    background:white;
-    padding:15px;
+.banner{
+    width:100%;
+    border-radius:20px;
+    box-shadow:0 0 25px rgba(255,0,120,.5);
+}
+
+h1{
+    margin-top:20px;
+    font-size:35px;
+}
+
+.texto{
+    margin-top:15px;
+    color:#ccc;
+    line-height:28px;
+    font-size:18px;
+}
+
+.pixBox{
+    background:#111;
+    padding:20px;
     border-radius:20px;
     margin-top:30px;
 }
@@ -40,7 +63,32 @@ button{
     background:#ff0080;
     color:white;
     font-size:20px;
+    font-weight:bold;
+    margin-top:15px;
+    cursor:pointer;
+}
+
+button:hover{
+    opacity:.9;
+}
+
+textarea{
+    width:100%;
+    height:120px;
     margin-top:20px;
+    border:none;
+    border-radius:15px;
+    padding:15px;
+    resize:none;
+    background:#1a1a1a;
+    color:white;
+}
+
+#paymentBrick_container{
+    background:white;
+    padding:15px;
+    border-radius:20px;
+    margin-top:35px;
 }
 
 </style>
@@ -49,9 +97,23 @@ button{
 
 <body>
 
+<div class="container">
+
 <img src="/static/foto1.jpg" class="banner">
 
-<h1>🔥 Finalizar pagamento</h1>
+<h1>🔥 Acesso VIP 🔥</h1>
+
+<div class="texto">
+🔞 Conteúdo exclusivo liberado imediatamente.<br><br>
+
+💋 Grupo VIP atualizado diariamente.<br>
+
+🎥 Lives privadas e conteúdos premium.
+</div>
+
+<div class="pixBox">
+
+<h2>⚡ Pagamento via Pix</h2>
 
 <button onclick="gerarPix()">
 GERAR PIX
@@ -59,11 +121,22 @@ GERAR PIX
 
 <div id="pixArea"></div>
 
+</div>
+
+<h2 style="margin-top:40px;">
+💳 Cartão e boleto
+</h2>
+
 <div id="paymentBrick_container"></div>
+
+</div>
 
 <script>
 
 async function gerarPix(){
+
+    document.getElementById("pixArea").innerHTML =
+    "Gerando Pix...";
 
     const response = await fetch("/process_payment", {
 
@@ -83,14 +156,45 @@ async function gerarPix(){
 
     const data = await response.json();
 
+    if(data.error){
+
+        document.getElementById("pixArea").innerHTML =
+        "Erro ao gerar Pix";
+
+        return;
+    }
+
     document.getElementById("pixArea").innerHTML = `
 
-        <img src="data:image/png;base64,${data.qr_base64}" width="250">
+        <img
+        src="data:image/png;base64,${data.qr_base64}"
+        width="250"
+        style="
+        margin-top:20px;
+        border-radius:20px;
+        "
+        >
 
-        <textarea style="width:100%;height:120px;">
+        <textarea id="pixCode">
 ${data.qr_code}
 </textarea>
+
+        <button onclick="copiarPix()">
+        COPIAR PIX
+        </button>
     `;
+}
+
+function copiarPix(){
+
+    const pix =
+    document.getElementById("pixCode");
+
+    navigator.clipboard.writeText(
+        pix.value
+    );
+
+    alert("Pix copiado!");
 }
 
 const mp = new MercadoPago(
@@ -103,11 +207,11 @@ const mp = new MercadoPago(
 const bricksBuilder = mp.bricks();
 
 bricksBuilder.create(
-"payment",
+"wallet",
 "paymentBrick_container",
 {
     initialization:{
-        amount:25
+        preferenceId:"{{ preference_id }}"
     }
 }
 );

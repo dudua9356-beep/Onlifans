@@ -1,3 +1,5 @@
+<script src="https://sdk.mercadopago.com/js/v2"></script>
+
 <script>
 
 async function gerarPix(){
@@ -24,6 +26,14 @@ async function gerarPix(){
 
     const data = await response.json();
 
+    if(data.error){
+
+        document.getElementById("pixArea").innerHTML =
+        "Erro ao gerar Pix";
+
+        return;
+    }
+
     document.getElementById("pixArea").innerHTML = `
 
         <img
@@ -35,7 +45,18 @@ async function gerarPix(){
         "
         >
 
-        <textarea id="pixCode">${data.qr_code}</textarea>
+        <textarea id="pixCode"
+        style="
+        width:100%;
+        height:120px;
+        margin-top:20px;
+        border:none;
+        border-radius:15px;
+        padding:15px;
+        background:#111;
+        color:white;
+        resize:none;
+        ">${data.qr_code}</textarea>
 
         <button onclick="copiarPix()">
         COPIAR PIX
@@ -51,7 +72,7 @@ function copiarPix(){
 
     pix.setSelectionRange(0, 99999);
 
-    document.execCommand("copy");
+    navigator.clipboard.writeText(pix.value);
 
     alert("Pix copiado!");
 }
@@ -65,73 +86,85 @@ const mp = new MercadoPago(
 
 const bricksBuilder = mp.bricks();
 
-bricksBuilder.create(
-"payment",
-"paymentBrick_container",
-{
-    initialization: {
-        amount: 25
-    },
+async function renderPaymentBrick() {
 
-    customization: {
-        paymentMethods: {
-            creditCard: "all",
-            debitCard: "all",
-            ticket: "all",
-            bankTransfer: "all",
-            maxInstallments: 12
+    await bricksBuilder.create(
+        "payment",
+        "paymentBrick_container",
+        {
+            initialization: {
+                amount: 25
+            },
+
+            customization: {
+                paymentMethods: {
+                    creditCard: "all",
+                    debitCard: "all",
+                    ticket: "all",
+                    bankTransfer: "all",
+                    maxInstallments: 12
+                }
+            },
+
+            callbacks: {
+
+                onReady: () => {
+                    console.log("Brick carregado");
+                },
+
+                onSubmit: ({formData}) => {
+
+                    return new Promise((resolve, reject) => {
+
+                        fetch("/process_payment", {
+
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+
+                            body: JSON.stringify(formData)
+
+                        })
+
+                        .then((response) => response.json())
+
+                        .then((response) => {
+
+                            console.log(response);
+
+                            if(response.error){
+                                alert("Erro no pagamento");
+                                reject();
+                                return;
+                            }
+
+                            alert("Pagamento enviado!");
+
+                            resolve();
+
+                        })
+
+                        .catch((error) => {
+
+                            console.log(error);
+
+                            reject();
+
+                        });
+
+                    });
+                },
+
+                onError: (error) => {
+                    console.error(error);
+                }
+            }
         }
-    },
-
-    callbacks: {
-
-        onSubmit: ({formData}) => {
-
-            return new Promise((resolve, reject) => {
-
-                fetch("/process_payment", {
-
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-
-                    body: JSON.stringify(formData)
-
-                })
-
-                .then((response) => response.json())
-
-                .then((response) => {
-
-                    console.log(response);
-
-                    resolve();
-
-                })
-
-                .catch((error) => {
-
-                    console.log(error);
-
-                    reject();
-
-                });
-
-            });
-
-        },
-
-        onReady: () => {
-            console.log("Brick carregado");
-        },
-
-        onError: (error) => {
-            console.error(error);
-        }
-    }
+    );
 }
-);
+
+renderPaymentBrick();
 
 </script>

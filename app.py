@@ -43,7 +43,7 @@ def checkout():
 
     user_id = str(uuid.uuid4())
 
-    valor = 29
+    valor = 25
 
     preference_data = {
 
@@ -99,19 +99,11 @@ def process_payment():
 
         payment_data = {
 
-            "transaction_amount": float(
-                data.get("transaction_amount", 29)
-            ),
-
-            "token": data.get("token"),
+            "transaction_amount": 25,
 
             "description": "Acesso VIP",
 
-            "installments": int(
-                data.get("installments", 1)
-            ),
-
-            "payment_method_id": data.get("payment_method_id"),
+            "payment_method_id": "pix",
 
             "payer": {
                 "email": data["payer"]["email"]
@@ -120,9 +112,19 @@ def process_payment():
 
         payment = sdk.payment().create(payment_data)
 
-        return jsonify(payment["response"])
+        response = payment["response"]
+
+        qr_code = response["point_of_interaction"]["transaction_data"]["qr_code"]
+
+        qr_base64 = response["point_of_interaction"]["transaction_data"]["qr_code_base64"]
+
+        return jsonify({
+            "qr_code": qr_code,
+            "qr_base64": qr_base64
+        })
 
     except Exception as e:
+
         print("Erro pagamento:", e)
 
         return jsonify({
